@@ -1,9 +1,10 @@
-# literature_bot.py - совместимая версия для Python 3.11
+# literature_bot.py - современная версия для Python 3.13
 import logging
 import random
 import json
 import os
 from typing import Dict, Any, List
+import asyncio
 
 # Настройка логирования
 logging.basicConfig(
@@ -332,77 +333,79 @@ class BookBot:
 # Инициализация бота
 book_bot = BookBot()
 
-# Telegram обработчики (синхронные для версии 13.15)
-def start_command(update, context):
+# Telegram обработчики (асинхронные для версии 21.7)
+async def start_command(update, context):
     user_id = update.effective_user.id
     user_name = update.effective_user.first_name or ""
     response = book_bot.handle_start(user_id, user_name)
-    update.message.reply_text(response, parse_mode='Markdown')
+    await update.message.reply_text(response, parse_mode='Markdown')
 
-def recommend_command(update, context):
+async def recommend_command(update, context):
     user_id = update.effective_user.id
     response = book_bot.handle_recommend(user_id)
-    update.message.reply_text(response, parse_mode='Markdown')
+    await update.message.reply_text(response, parse_mode='Markdown')
 
-def like_command(update, context):
+async def like_command(update, context):
     user_id = update.effective_user.id
     response = book_bot.handle_like(user_id)
-    update.message.reply_text(response, parse_mode='Markdown')
+    await update.message.reply_text(response, parse_mode='Markdown')
 
-def top_command(update, context):
+async def top_command(update, context):
     user_id = update.effective_user.id
     response = book_bot.handle_top(user_id)
-    update.message.reply_text(response, parse_mode='Markdown')
+    await update.message.reply_text(response, parse_mode='Markdown')
 
-def books_command(update, context):
+async def books_command(update, context):
     user_id = update.effective_user.id
     response = book_bot.handle_books(user_id)
-    update.message.reply_text(response, parse_mode='Markdown')
+    await update.message.reply_text(response, parse_mode='Markdown')
 
-def genres_command(update, context):
+async def genres_command(update, context):
     user_id = update.effective_user.id
     response = book_bot.handle_genres(user_id)
-    update.message.reply_text(response, parse_mode='Markdown')
+    await update.message.reply_text(response, parse_mode='Markdown')
 
-def help_command(update, context):
+async def help_command(update, context):
     user_id = update.effective_user.id
     response = book_bot.handle_help(user_id)
-    update.message.reply_text(response, parse_mode='Markdown')
+    await update.message.reply_text(response, parse_mode='Markdown')
 
-def handle_user_message(update, context):
+async def handle_user_message(update, context):
     user_id = update.effective_user.id
     user_input = update.message.text
     user_name = update.effective_user.first_name or ""
     response = book_bot.handle_message(user_id, user_input, user_name)
-    update.message.reply_text(response, parse_mode='Markdown')
+    await update.message.reply_text(response, parse_mode='Markdown')
 
-def main():
+async def main():
     print("🚀 Запуск Литературного Гурмана на Render.com...")
     print(f"📚 В библиотеке: {len(BOOKS_DATABASE)} книг")
     print("✅ Бот инициализирован и готов к работе!")
     
     try:
-        from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
+        from telegram.ext import Application, CommandHandler, MessageHandler, filters
         
-        # Создаем updater (старый синтаксис для версии 13.15)
-        updater = Updater(TELEGRAM_BOT_TOKEN, use_context=True)
-        dispatcher = updater.dispatcher
+        # Создаем приложение
+        application = Application.builder().token(TELEGRAM_BOT_TOKEN).build()
         
         # Добавляем обработчики
-        dispatcher.add_handler(CommandHandler("start", start_command))
-        dispatcher.add_handler(CommandHandler("recommend", recommend_command))
-        dispatcher.add_handler(CommandHandler("like", like_command))
-        dispatcher.add_handler(CommandHandler("top", top_command))
-        dispatcher.add_handler(CommandHandler("books", books_command))
-        dispatcher.add_handler(CommandHandler("genres", genres_command))
-        dispatcher.add_handler(CommandHandler("help", help_command))
-        dispatcher.add_handler(MessageHandler(Filters.text & ~Filters.command, handle_user_message))
+        handlers = [
+            CommandHandler("start", start_command),
+            CommandHandler("recommend", recommend_command),
+            CommandHandler("like", like_command),
+            CommandHandler("top", top_command),
+            CommandHandler("books", books_command),
+            CommandHandler("genres", genres_command),
+            CommandHandler("help", help_command),
+            MessageHandler(filters.TEXT & ~filters.COMMAND, handle_user_message)
+        ]
+        
+        for handler in handlers:
+            application.add_handler(handler)
         
         # Запускаем бота
         print("🔍 Начинаем прослушивание сообщений...")
-        updater.start_polling()
-        print("✅ Бот успешно запущен и работает!")
-        updater.idle()
+        await application.run_polling()
         
     except Exception as e:
         logger.error(f"Критическая ошибка: {e}")
@@ -411,13 +414,13 @@ def main():
 if __name__ == "__main__":
     # Проверяем зависимости
     try:
-        from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
+        from telegram.ext import Application, CommandHandler, MessageHandler, filters
         print("✅ Все зависимости загружены успешно")
     except ImportError as e:
         print(f"❌ Ошибка импорта: {e}")
         print("Убедитесь, что установлены все зависимости:")
-        print("pip install python-telegram-bot==13.15")
+        print("pip install python-telegram-bot==21.7")
         exit(1)
     
     # Запускаем бота
-    main()
+    asyncio.run(main())
