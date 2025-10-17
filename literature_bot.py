@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 # Токен бота
 TELEGRAM_BOT_TOKEN = "8421692900:AAH8-5L37_6SeNYKQ_RwsUJbva-kV71F8QU"
 
-# База данных книг (25 книг)
+# База данных книг (10 книг)
 BOOKS_DATABASE = [
     {
         "id": 1,
@@ -429,7 +429,7 @@ if __name__ == "__main__":
     except ImportError as e:
         print(f"❌ Ошибка импорта: {e}")
         print("Убедитесь, что установлены все зависимости:")
-        print("pip install python-telegram-bot==20.9")
+        print("pip install python-telegram-bot==20.8")
         exit(1)
     
     # Запускаем бота
