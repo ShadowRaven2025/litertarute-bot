@@ -1,10 +1,9 @@
-# literature_bot.py - полная версия бота для Render.com
+# literature_bot.py - совместимая версия для Python 3.11
 import logging
 import random
 import json
 import os
 from typing import Dict, Any, List
-import asyncio
 
 # Настройка логирования
 logging.basicConfig(
@@ -23,80 +22,70 @@ BOOKS_DATABASE = [
         "title": "Хоббит, или Туда и обратно",
         "author": "Дж. Р. Р. Толкин",
         "genres": ["Фэнтези", "Приключения"],
-        "description": "Классическая история о путешествии Бильбо Бэггинса.",
-        "mood": ["Приподнятое", "Эпическое", "Доброе"]
+        "description": "Классическая история о путешествии Бильбо Бэггинса."
     },
     {
         "id": 2,
         "title": "Мастер и Маргарита",
         "author": "Михаил Булгаков",
         "genres": ["Классика", "Мистика", "Сатира"],
-        "description": "Мистический роман о визите дьявола в Москву 1930-х годов.",
-        "mood": ["Мистическое", "Загадочное", "Философское"]
+        "description": "Мистический роман о визите дьявола в Москву 1930-х годов."
     },
     {
         "id": 3,
         "title": "1984",
         "author": "Джордж Оруэлл",
         "genres": ["Антиутопия", "Научная фантастика"],
-        "description": "Роман-антиутопия о тоталитарном обществе под постоянным контролем.",
-        "mood": ["Тревожное", "Философское", "Мрачное"]
+        "description": "Роман-антиутопия о тоталитарном обществе под постоянным контролем."
     },
     {
         "id": 4,
         "title": "Гарри Поттер и философский камень",
         "author": "Джоан Роулинг",
         "genres": ["Фэнтези", "Приключения"],
-        "description": "Первая книга о юном волшебнике Гарри Поттере.",
-        "mood": ["Волшебное", "Приключенческое", "Захватывающее"]
+        "description": "Первая книга о юном волшебнике Гарри Поттере."
     },
     {
         "id": 5,
         "title": "Преступление и наказание",
         "author": "Фёдор Достоевский",
         "genres": ["Классика", "Психологический роман"],
-        "description": "История бывшего студента Родиона Раскольникова.",
-        "mood": ["Психологическое", "Драматическое", "Философское"]
+        "description": "История бывшего студента Родиона Раскольникова."
     },
     {
         "id": 6,
         "title": "Властелин колец: Братство кольца",
         "author": "Дж. Р. Р. Толкин",
         "genres": ["Фэнтези", "Эпическое"],
-        "description": "Эпическая история о путешествии Фродо Бэггинса.",
-        "mood": ["Эпическое", "Приключенческое", "Героическое"]
+        "description": "Эпическая история о путешествии Фродо Бэггинса."
     },
     {
         "id": 7,
         "title": "Три товарища",
         "author": "Эрих Мария Ремарк",
         "genres": ["Классика", "Роман"],
-        "description": "История о дружбе и любви в послевоенной Германии.",
-        "mood": ["Ностальгическое", "Лирическое", "Грустное"]
+        "description": "История о дружбе и любви в послевоенной Германии."
     },
     {
         "id": 8,
         "title": "Убить пересмешника",
         "author": "Харпер Ли",
         "genres": ["Классика", "Драма"],
-        "description": "Пронзительная история о взрослении и неравенстве.",
-        "mood": ["Задумчивое", "Эмоциональное", "Сильное"]
+        "description": "Пронзительная история о взрослении и неравенстве."
     },
     {
         "id": 9,
         "title": "Анна Каренина",
         "author": "Лев Толстой",
         "genres": ["Классика", "Роман"],
-        "description": "Трагическая история любви замужней женщины.",
-        "mood": ["Драматическое", "Эмоциональное", "Трагическое"]
+        "description": "Трагическая история любви замужней женщины."
     },
     {
         "id": 10,
         "title": "Маленький принц",
         "author": "Антуан де Сент-Экзюпери",
         "genres": ["Философия", "Притча"],
-        "description": "Философская притча о маленьком мальчике с астероида.",
-        "mood": ["Поэтическое", "Философское", "Трогательное"]
+        "description": "Философская притча о маленьком мальчике с астероида."
     }
 ]
 
@@ -343,79 +332,77 @@ class BookBot:
 # Инициализация бота
 book_bot = BookBot()
 
-# Telegram обработчики
-async def start_command(update, context):
+# Telegram обработчики (синхронные для версии 13.15)
+def start_command(update, context):
     user_id = update.effective_user.id
     user_name = update.effective_user.first_name or ""
     response = book_bot.handle_start(user_id, user_name)
-    await update.message.reply_text(response, parse_mode='Markdown')
+    update.message.reply_text(response, parse_mode='Markdown')
 
-async def recommend_command(update, context):
+def recommend_command(update, context):
     user_id = update.effective_user.id
     response = book_bot.handle_recommend(user_id)
-    await update.message.reply_text(response, parse_mode='Markdown')
+    update.message.reply_text(response, parse_mode='Markdown')
 
-async def like_command(update, context):
+def like_command(update, context):
     user_id = update.effective_user.id
     response = book_bot.handle_like(user_id)
-    await update.message.reply_text(response, parse_mode='Markdown')
+    update.message.reply_text(response, parse_mode='Markdown')
 
-async def top_command(update, context):
+def top_command(update, context):
     user_id = update.effective_user.id
     response = book_bot.handle_top(user_id)
-    await update.message.reply_text(response, parse_mode='Markdown')
+    update.message.reply_text(response, parse_mode='Markdown')
 
-async def books_command(update, context):
+def books_command(update, context):
     user_id = update.effective_user.id
     response = book_bot.handle_books(user_id)
-    await update.message.reply_text(response, parse_mode='Markdown')
+    update.message.reply_text(response, parse_mode='Markdown')
 
-async def genres_command(update, context):
+def genres_command(update, context):
     user_id = update.effective_user.id
     response = book_bot.handle_genres(user_id)
-    await update.message.reply_text(response, parse_mode='Markdown')
+    update.message.reply_text(response, parse_mode='Markdown')
 
-async def help_command(update, context):
+def help_command(update, context):
     user_id = update.effective_user.id
     response = book_bot.handle_help(user_id)
-    await update.message.reply_text(response, parse_mode='Markdown')
+    update.message.reply_text(response, parse_mode='Markdown')
 
-async def handle_user_message(update, context):
+def handle_user_message(update, context):
     user_id = update.effective_user.id
     user_input = update.message.text
     user_name = update.effective_user.first_name or ""
     response = book_bot.handle_message(user_id, user_input, user_name)
-    await update.message.reply_text(response, parse_mode='Markdown')
+    update.message.reply_text(response, parse_mode='Markdown')
 
-async def main():
+def main():
     print("🚀 Запуск Литературного Гурмана на Render.com...")
     print(f"📚 В библиотеке: {len(BOOKS_DATABASE)} книг")
     print("✅ Бот инициализирован и готов к работе!")
     
     try:
-        from telegram.ext import Application, CommandHandler, MessageHandler, filters
+        from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
         
-        # Создаем приложение
-        application = Application.builder().token(TELEGRAM_BOT_TOKEN).build()
+        # Создаем updater (старый синтаксис для версии 13.15)
+        updater = Updater(TELEGRAM_BOT_TOKEN, use_context=True)
+        dispatcher = updater.dispatcher
         
         # Добавляем обработчики
-        handlers = [
-            CommandHandler("start", start_command),
-            CommandHandler("recommend", recommend_command),
-            CommandHandler("like", like_command),
-            CommandHandler("top", top_command),
-            CommandHandler("books", books_command),
-            CommandHandler("genres", genres_command),
-            CommandHandler("help", help_command),
-            MessageHandler(filters.TEXT & ~filters.COMMAND, handle_user_message)
-        ]
-        
-        for handler in handlers:
-            application.add_handler(handler)
+        dispatcher.add_handler(CommandHandler("start", start_command))
+        dispatcher.add_handler(CommandHandler("recommend", recommend_command))
+        dispatcher.add_handler(CommandHandler("like", like_command))
+        dispatcher.add_handler(CommandHandler("top", top_command))
+        dispatcher.add_handler(CommandHandler("books", books_command))
+        dispatcher.add_handler(CommandHandler("genres", genres_command))
+        dispatcher.add_handler(CommandHandler("help", help_command))
+        dispatcher.add_handler(MessageHandler(Filters.text & ~Filters.command, handle_user_message))
         
         # Запускаем бота
         print("🔍 Начинаем прослушивание сообщений...")
-        await application.run_polling()
+        updater.start_polling()
+        print("✅ Бот успешно запущен и работает!")
+        updater.idle()
         
     except Exception as e:
         logger.error(f"Критическая ошибка: {e}")
@@ -424,13 +411,13 @@ async def main():
 if __name__ == "__main__":
     # Проверяем зависимости
     try:
-        from telegram.ext import Application, CommandHandler, MessageHandler, filters
+        from telegram.ext import Updater, CommandHandler, MessageHandler, Filters
         print("✅ Все зависимости загружены успешно")
     except ImportError as e:
         print(f"❌ Ошибка импорта: {e}")
         print("Убедитесь, что установлены все зависимости:")
-        print("pip install python-telegram-bot==20.8")
+        print("pip install python-telegram-bot==13.15")
         exit(1)
     
     # Запускаем бота
-    asyncio.run(main())
+    main()
