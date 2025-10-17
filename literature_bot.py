@@ -1,4 +1,3 @@
-# literature_bot.py - упрощенная версия с polling
 import logging
 import random
 import asyncio
@@ -208,3 +207,4 @@ async def main():
 if __name__ == "__main__":
     # Запускаем асинхронную функцию
     asyncio.run(main())
+
