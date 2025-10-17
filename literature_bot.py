@@ -1,6 +1,6 @@
 # render_bot.py - для Render.com
-import os
 import logging
+import os
 import random
 from flask import Flask, request
 from telegram import Update
@@ -172,3 +172,4 @@ def main():
 
 if __name__ == '__main__':
     main()
+
